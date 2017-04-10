@@ -12,7 +12,7 @@ int encoderDTpin = 2;
 int encoderCLKpin = 3;
 Encoder myEnc(encoderDTpin, encoderCLKpin);
 
-int buttonPin = 8;
+int buttonPin = A1;
 OneButton button0(buttonPin, true);
 
 int cursorPos = 0;
@@ -52,7 +52,7 @@ void setup() {
   Serial.println("Begin : " + String(currentPosition));
   // Map rotary button to actions
    button0.attachClick(singleClick);
-   button0.attachDoubleClick(doubleClick);
+
 
   // Setup LCD
   lcd.begin (16,2);
@@ -73,12 +73,9 @@ void setup() {
 }
 
 void loop() {
-
   button0.tick();
   lcdMenu();
   rotary_check();
-
-
 }
 
 
@@ -214,7 +211,9 @@ void selectNext(){
   }
   else
   {
-    colorValues[itemSelected] = (colorValues[itemSelected] +1) %255;
+    if(colorValues[itemSelected] > 0){
+    colorValues[itemSelected] = colorValues[itemSelected] -1;
+    }
   }
 
 }
@@ -228,7 +227,9 @@ void selectPrevious(){
  }
  else
   {
-    colorValues[itemSelected] = (colorValues[itemSelected] -1) %255;
+    if( colorValues[itemSelected] <255){
+    colorValues[itemSelected] = colorValues[itemSelected] +1;
+    }
   }
 
 }
