@@ -8,10 +8,9 @@
 
 #include <FastLED.h>
 
-
 #define COLOR_ORDER RGB
 
-#define LED_PIN     5
+#define LED_PIN  5
 #define NUM_LEDS 2
 CRGB leds[NUM_LEDS];
 
@@ -25,8 +24,6 @@ Encoder myEnc(encoderDTpin, encoderCLKpin);
 
 int buttonPin = A1;
 OneButton button0(buttonPin, true);
-
-int cursorPos = 0;
 
 int currentPosition=0;
 int lcdUpdated = 0;
@@ -63,9 +60,7 @@ void setup() {
   Serial.begin(9600);
   Serial.println("Begin : " + String(currentPosition));
   // Map rotary button to actions
-   button0.attachClick(singleClick);
-
-
+  button0.attachClick(singleClick);
   // Setup LCD
   lcd.begin (16,2);
   lcd.setBacklightPin(3,POSITIVE);
@@ -80,9 +75,9 @@ void setup() {
   lcd.setCursor (0,0);
   lcd.print("                ");
   lcd.setCursor (0,0);
-  writeCursor();
+  lcd.write(byte(0));
   FastLED.addLeds<NEOPIXEL, LED_PIN>(leds, NUM_LEDS);
-  FastLED.setBrightness(  64 );
+  FastLED.setBrightness( 64 );
 }
 
 void loop() {
@@ -94,7 +89,6 @@ void loop() {
 
 
 void singleClick() {
-
   Serial.println("Button Pressed");
   lcdUpdated = 0;
   if(itemSelected == 5){
@@ -103,7 +97,6 @@ void singleClick() {
   else{
     itemSelected = 5;
   }
-
 }
 
 void doubleClick() {}
@@ -111,11 +104,6 @@ void doubleClick() {}
 void clearLine(int line){
   lcd.setCursor (0,line);
   lcd.print("                ");
-}
-
-void writeCursor(){
-
-  lcd.write(byte(0));
 }
 
 void lcdMenu(){
@@ -126,10 +114,10 @@ void lcdMenu(){
 
   if(currentPosition == 0){
     lcd.setCursor(0, 0);
-    writeCursor();
+    lcd.write(byte(0));
     if(itemSelected == 0){
-    lcd.setCursor(1, 0);
-    lcd.print("*");
+      lcd.setCursor(1, 0);
+      lcd.print("*");
     }
     lcd.setCursor(2, 0);
     lcd.print(menu[0]);
@@ -141,10 +129,10 @@ void lcdMenu(){
   }
   if(currentPosition == 1){
     lcd.setCursor(0, 1);
-    writeCursor();
+    lcd.write(byte(0));
     if(itemSelected == 1){
-    lcd.setCursor(1, 1);
-    lcd.print("*");
+      lcd.setCursor(1, 1);
+      lcd.print("*");
     }
     lcd.setCursor(2, 0);
     lcd.print(menu[0]);
@@ -157,10 +145,10 @@ void lcdMenu(){
 
   if(currentPosition == 2){
     lcd.setCursor(0, 0);
-    writeCursor();
+    lcd.write(byte(0));
     if(itemSelected == 2){
-    lcd.setCursor(1, 0);
-    lcd.print("*");
+      lcd.setCursor(1, 0);
+      lcd.print("*");
     }
     lcd.setCursor(2, 0);
     lcd.print(menu[2]);
@@ -172,10 +160,10 @@ void lcdMenu(){
   }
   if(currentPosition == 3){
     lcd.setCursor(0, 1);
-    writeCursor();
+    lcd.write(byte(0));
     if(itemSelected == 3){
-    lcd.setCursor(1, 1);
-    lcd.print("*");
+      lcd.setCursor(1, 1);
+      lcd.print("*");
     }
     lcd.setCursor(2, 0);
     lcd.print(menu[2]);
@@ -200,17 +188,13 @@ void clearMenu(){
 
 void rotary_check(){
   long newPosition = myEnc.read() /4;
-
   if(newPosition != oldPosition){
-
-
-      if(newPosition > oldPosition ){
-        selectNext();
-      }
-      else if (newPosition < oldPosition ){
-        selectPrevious();
-      }
-
+    if(newPosition > oldPosition ){
+      selectNext();
+    }
+    else if (newPosition < oldPosition ){
+      selectPrevious();
+    }
     lcdUpdated = 0;
     oldPosition = newPosition;
   }
@@ -219,34 +203,31 @@ void rotary_check(){
 void selectNext(){
   if(itemSelected == 5){
     if(currentPosition<3){
-
-  currentPosition = (currentPosition+1) %4;
+      currentPosition = (currentPosition+1) %4;
     }
-  Serial.println("Select Next currentPosition : " + String(currentPosition));
+    Serial.println("Select Next currentPosition : " + String(currentPosition));
   }
   else
   {
     if(colorValues[itemSelected] > 0){
-    colorValues[itemSelected] = colorValues[itemSelected] -1;
+      colorValues[itemSelected] = colorValues[itemSelected] -1;
     }
   }
-
 }
 
 void selectPrevious(){
- if(itemSelected == 5){
-  if(currentPosition >0){
-  currentPosition = (currentPosition-1) %4;
+  if(itemSelected == 5){
+    if(currentPosition >0){
+      currentPosition = (currentPosition-1) %4;
+    }
+    Serial.println("Select Previous currentPosition : " + String(currentPosition));
   }
-  Serial.println("Select Previous currentPosition : " + String(currentPosition));
- }
- else
+  else
   {
     if( colorValues[itemSelected] <255){
-    colorValues[itemSelected] = colorValues[itemSelected] +1;
+      colorValues[itemSelected] = colorValues[itemSelected] +1;
     }
   }
-
 }
 
 
@@ -255,8 +236,7 @@ void updateLEDS(){
     for(int i = 0;i<NUM_LEDS; i++){
       leds[i] = CRGB(colorValues[0], colorValues[1], colorValues[2]);
     }
-     FastLED.show();
-     ledUpdated = 1;
-
+    FastLED.show();
+    ledUpdated = 1;
   }
 }
