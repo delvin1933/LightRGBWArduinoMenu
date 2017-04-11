@@ -1,8 +1,19 @@
+#include <Arduino.h>
+
 #include <OneButton.h>
 #include <Encoder.h>
 #include <Wire.h>
 #include <LCD.h>
 #include <LiquidCrystal_I2C.h>
+
+#include <FastLED.h>
+
+
+#define COLOR_ORDER RGB
+
+#define LED_PIN     5
+#define NUM_LEDS 2
+CRGB leds[NUM_LEDS];
 
 LiquidCrystal_I2C  lcd(0x27,2,1,0,4,5,6,7);
 
@@ -19,6 +30,7 @@ int cursorPos = 0;
 
 int currentPosition=0;
 int lcdUpdated = 0;
+int ledUpdated = 0;
 
 int itemSelected = 5;
 
@@ -69,13 +81,15 @@ void setup() {
   lcd.print("                ");
   lcd.setCursor (0,0);
   writeCursor();
-
+  FastLED.addLeds<NEOPIXEL, LED_PIN>(leds, NUM_LEDS);
+  FastLED.setBrightness(  64 );
 }
 
 void loop() {
   button0.tick();
   lcdMenu();
   rotary_check();
+  updateLEDS();
 }
 
 
@@ -172,6 +186,7 @@ void lcdMenu(){
     lcd.print(colorValues[3]);
   }
   lcdUpdated = 1;
+  ledUpdated = 0;
   }
 }
 
@@ -232,4 +247,16 @@ void selectPrevious(){
     }
   }
 
+}
+
+
+void updateLEDS(){
+  if(ledUpdated == 0){
+    for(int i = 0;i<NUM_LEDS; i++){
+      leds[i] = CRGB(colorValues[0], colorValues[1], colorValues[2]);
+    }
+     FastLED.show();
+     ledUpdated = 1;
+
+  }
 }
